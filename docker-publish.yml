@@ -1,0 +1,40 @@
+name: Docker
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - "README.md"
+ 
+jobs:
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Dockerhub login
+        env:
+          DOCKER_PASSWORD: ${{ secrets.docker-password }}
+          DOCKER_USERNAME: ${{ secrets.docker-name }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username ${DOCKER_USERNAME} --password-stdin
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: fz/action-docker-buildx@v1
+        with:
+          buildx-version: latest
+      - name: Build dockerfile (with push)
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          docker buildx build \
+          --platform=linux/amd64,linux/arm64 \
+          --output "type=image,push=true" \
+          --file ./Dockerfile . \
+          --tag sensorsdata/logstash:7.17.0

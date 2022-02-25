@@ -37,4 +37,4 @@ jobs:
           --platform=linux/amd64,linux/arm64 \
           --output "type=image,push=true" \
           --file ./Dockerfile . \
-          --tag sensorsdata/logstash:7.17.0
+          --tag sensorsdata/logstash:latest
